@@ -3,7 +3,7 @@ node_modules/
 
 # Environment
 .env
-.env.local
+.env.*
 
 # Logs
 *.log
@@ -19,6 +19,4 @@ Thumbs.db
 
 # Build
 dist/
-
-# Coverage
 coverage/
