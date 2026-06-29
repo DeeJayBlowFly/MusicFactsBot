@@ -20,3 +20,12 @@ test("Parse version", () => {
   assert.equal(result.version, "Extended Version");
   assert.deepEqual(result.featuring, []);
 });
+test("parse: featuring artist", () => {
+  const result = parseTrack(
+    "Boney M. feat. Bobby Farrell - Sunny '98'"
+  );
+
+  assert.deepEqual(result.artists, ["Boney M."]);
+  assert.deepEqual(result.featuring, ["Bobby Farrell"]);
+  assert.equal(result.title, "Sunny '98'");
+});
