@@ -1,3 +1,8 @@
+const { extractVersion } = require("./rules/version");
+const { extractFeaturing } = require("./rules/featuring");
+const { extractArtists } = require("./rules/artists");
+const { extractRemix } = require("./rules/remix");
+
 function parseTrack(track) {
   if (!track || typeof track !== "string") {
     throw new Error("Invalid track");
@@ -9,15 +14,19 @@ function parseTrack(track) {
     throw new Error("Unable to parse track");
   }
 
-  const artist = parts.shift().trim();
-  const title = parts.join(" - ").trim();
-
-  return {
-    artists: [artist],
-    title,
+  let data = {
+    artists: [parts.shift().trim()],
+    title: parts.join(" - ").trim(),
     version: null,
     featuring: [],
   };
+
+  data = extractArtists(data);
+  data = extractFeaturing(data);
+  data = extractVersion(data);
+  data = extractRemix(data);
+
+  return data;
 }
 
 module.exports = {
