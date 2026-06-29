@@ -10,7 +10,7 @@ async function start() {
   try {
     await app.listen({
       port: PORT,
-      host: "0.0.0.0"
+      host: "0.0.0.0",
     });
 
     app.log.info(`MusicFactsBot running on port ${PORT}`);

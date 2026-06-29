@@ -1,4 +1,4 @@
-export async function retry(fn, retries = 3) {
+async function retry(fn, retries = 3) {
   let lastError;
 
   for (let i = 0; i < retries; i++) {
@@ -15,3 +15,7 @@ export async function retry(fn, retries = 3) {
 
   throw lastError;
 }
+
+module.exports = {
+  retry,
+};

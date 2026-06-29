@@ -18,13 +18,13 @@ const config = {
   app: {
     name: "MusicFactsBot",
     version: "2.0.0",
-    port: Number(getEnv("PORT", 3000))
+    port: Number(getEnv("PORT", 3000)),
   },
 
   openai: {
     apiKey: getEnv("OPENAI_API_KEY"),
-    model: getEnv("OPENAI_MODEL", "gpt-5-mini")
-  }
+    model: getEnv("OPENAI_MODEL", "gpt-5-mini"),
+  },
 };
 
 module.exports = config;

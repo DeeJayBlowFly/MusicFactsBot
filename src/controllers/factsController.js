@@ -6,7 +6,7 @@ async function factsController(request, reply) {
   if (!track) {
     return reply.code(400).send({
       success: false,
-      error: "Missing required query parameter: track"
+      error: "Missing required query parameter: track",
     });
   }
 
@@ -17,18 +17,18 @@ async function factsController(request, reply) {
       success: true,
       track,
       language: lang,
-      fact
+      fact,
     };
   } catch (err) {
     request.log.error(err);
 
     return reply.code(500).send({
       success: false,
-      error: "Unable to retrieve music fact."
+      error: "Unable to retrieve music fact.",
     });
   }
 }
 
 module.exports = {
-  factsController
+  factsController,
 };

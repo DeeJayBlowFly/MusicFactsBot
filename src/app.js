@@ -10,9 +10,9 @@ async function buildApp() {
   const app = Fastify({
     logger: {
       transport: {
-        target: "pino-pretty"
-      }
-    }
+        target: "pino-pretty",
+      },
+    },
   });
 
   await app.register(cors);

@@ -1,6 +1,5 @@
 function extractFeaturing(data) {
-  const regex =
-    /\s+(?:feat\.?|ft\.?|featuring)\s+/i;
+  const regex = /\s+(?:feat\.?|ft\.?|featuring)\s+/i;
 
   const match = data.artists[0].match(regex);
 

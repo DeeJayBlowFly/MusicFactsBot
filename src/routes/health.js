@@ -3,7 +3,7 @@ async function healthRoutes(app) {
     return {
       status: "ok",
       service: "MusicFactsBot",
-      version: "2.0.0"
+      version: "2.0.0",
     };
   });
 }
