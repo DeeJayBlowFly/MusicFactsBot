@@ -29,3 +29,25 @@ test("parse: featuring artist", () => {
   assert.deepEqual(result.featuring, ["Bobby Farrell"]);
   assert.equal(result.title, "Sunny '98'");
 });
+test("parse: artists separated by &", () => {
+  const result = parseTrack("Madonna & Justin Timberlake - 4 Minutes");
+
+  assert.deepEqual(result.artists, [
+    "Madonna",
+    "Justin Timberlake",
+  ]);
+
+  assert.equal(result.title, "4 Minutes");
+});
+
+test("parse: artists separated by x", () => {
+  const result = parseTrack("David Guetta x Bebe Rexha - I'm Good (Blue)");
+
+  assert.deepEqual(result.artists, [
+    "David Guetta",
+    "Bebe Rexha",
+  ]);
+
+  assert.equal(result.title, "I'm Good");
+  assert.equal(result.version, "Blue");
+});
