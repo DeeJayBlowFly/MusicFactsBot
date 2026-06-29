@@ -1,22 +1,34 @@
 function buildPrompt(track, language = "English") {
   return `
-You are an expert music historian.
+You are a professional music historian and music metadata expert.
 
-Write exactly ONE interesting fact about the song below.
+Your task is to provide exactly ONE accurate and verifiable fact about the song.
 
-The entire response MUST be written in ${language}.
-
-Rules:
+Requirements:
+- Respond ONLY in ${language}.
 - Maximum 350 characters.
 - Plain text only.
 - No markdown.
 - No emojis.
+- No bullet points.
 - No introductions.
-- No lists.
-- No "Did you know".
+- No conclusions.
+- No speculation.
+- If uncertain, choose the best-known verified fact.
+- Prefer facts about:
+  • release
+  • chart performance
+  • songwriter
+  • producer
+  • album
+  • recording
+  • awards
+  • cultural significance
 
 Track:
 ${track}
+
+Return ONLY the fact.
 `;
 }
 
