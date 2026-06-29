@@ -1,3 +1,5 @@
+const rateLimitPlugin = require("./plugins/rateLimit");
+const swaggerPlugin = require("./plugins/swagger");
 const Fastify = require("fastify");
 const cors = require("@fastify/cors");
 const sensible = require("@fastify/sensible");
@@ -24,6 +26,9 @@ async function buildApp() {
   await app.register(cors);
   await app.register(sensible);
 
+  await app.register(swaggerPlugin);
+  await app.register(rateLimitPlugin);
+  
   await app.register(healthRoutes);
   await app.register(versionRoutes);
   await app.register(factsRoutes);
