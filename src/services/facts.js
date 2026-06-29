@@ -1,14 +1,15 @@
-const ask = require("./openai").ask;
+const { ask } = require("./openai");
 const buildPrompt = require("../prompts/facts");
+const { getLanguage } = require("../utils/language");
 
-async function getFact(track, lang) {
+async function getFact(track, lang = "en") {
+  const language = getLanguage(lang);
 
-  const prompt = buildPrompt(track, lang);
+  const prompt = buildPrompt(track, language);
 
-  return await ask(prompt);
-
+  return ask(prompt);
 }
 
 module.exports = {
-  getFact
+  getFact,
 };

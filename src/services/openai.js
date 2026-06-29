@@ -1,27 +1,18 @@
 const OpenAI = require("openai");
-const config = require("../config/env");
 
 const client = new OpenAI({
-  apiKey: config.openai.apiKey
+  apiKey: process.env.OPENAI_API_KEY,
 });
 
-async function ask(prompt) {
-  try {
-    const response = await client.responses.create({
-      model: config.openai.model,
-      input: prompt
-    });
+async function ask(input) {
+  const response = await client.responses.create({
+    model: process.env.OPENAI_MODEL || "gpt-5-mini",
+    input,
+  });
 
-    return response.output_text.trim();
-
-  } catch (err) {
-
-    console.error(err);
-
-    return "No music facts available.";
-  }
+  return response.output_text.trim();
 }
 
 module.exports = {
-  ask
+  ask,
 };

@@ -4,15 +4,15 @@
   "description": "",
   "main": "src/server.js",
   "scripts": {
-  "dev": "nodemon src/server.js",
-  "start": "node src/server.js",
-  "lint": "eslint .",
-  "format": "prettier --write .",
-  "test": "node --test"
-},
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "test": "node --test"
+  },
   "engines": {
-  "node": ">=24 <25"
-},
+    "node": ">=24 <25"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/DeeJayBlowFly/MusicFactsBot.git"

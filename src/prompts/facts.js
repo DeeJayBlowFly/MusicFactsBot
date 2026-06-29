@@ -1,29 +1,23 @@
-function buildPrompt(track, lang) {
-
+function buildPrompt(track, language = "English") {
   return `
-You are a professional music historian.
+You are an expert music historian.
 
-Write ONE interesting fact about this song.
+Write exactly ONE interesting fact about the song below.
 
-Song:
-
-${track}
-
-Language:
-
-${lang}
+The entire response MUST be written in ${language}.
 
 Rules:
+- Maximum 350 characters.
+- Plain text only.
+- No markdown.
+- No emojis.
+- No introductions.
+- No lists.
+- No "Did you know".
 
-Maximum 350 characters.
-
-No lists.
-
-No markdown.
-
-Only the fact.
+Track:
+${track}
 `;
-
 }
 
 module.exports = buildPrompt;

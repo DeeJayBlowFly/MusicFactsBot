@@ -1,24 +1,7 @@
-const { getFact } = require("../services/facts");
+const { factsController } = require("../controllers/factsController");
 
 async function factsRoutes(app) {
-
-  app.get("/facts", async (request) => {
-
-    const {
-      track = "",
-      lang = "en"
-    } = request.query;
-
-    const fact = await getFact(track, lang);
-
-    return {
-      track,
-      language: lang,
-      fact
-    };
-
-  });
-
+  app.get("/facts", factsController);
 }
 
 module.exports = factsRoutes;
