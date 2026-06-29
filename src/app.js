@@ -1,3 +1,4 @@
+const errorHandlerPlugin = require("./plugins/errorHandler");
 const rateLimitPlugin = require("./plugins/rateLimit");
 const swaggerPlugin = require("./plugins/swagger");
 const Fastify = require("fastify");
@@ -28,7 +29,7 @@ async function buildApp() {
 
   await app.register(swaggerPlugin);
   await app.register(rateLimitPlugin);
-  
+  await app.register(errorHandlerPlugin);
   await app.register(healthRoutes);
   await app.register(versionRoutes);
   await app.register(factsRoutes);
