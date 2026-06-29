@@ -1,14 +1,18 @@
 const OpenAI = require("openai");
+const { retry } = require("../utils/retry");
 
 const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
 async function ask(input) {
-  const response = await client.responses.create({
-    model: process.env.OPENAI_MODEL || "gpt-5-mini",
-    input,
-  });
+  const response = await retry(() =>
+    client.responses.create({
+      model: process.env.OPENAI_MODEL || "gpt-5-mini",
+      input,
+      timeout: 30000,
+    })
+  );
 
   return response.output_text.trim();
 }
