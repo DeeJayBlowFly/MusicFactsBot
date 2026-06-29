@@ -13,7 +13,7 @@ function parseTrack(track) {
   const title = parts.join(" - ").trim();
 
   return {
-    artist,
+    artists: [artist],
     title,
     version: null,
     featuring: [],

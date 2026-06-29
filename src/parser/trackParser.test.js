@@ -6,7 +6,7 @@ const { parseTrack } = require("./trackParser");
 test("Parse simple track", () => {
   const result = parseTrack("ABBA - Dancing Queen");
 
-  assert.equal(result.artist, "ABBA");
+  assert.deepEqual(result.artists, ["ABBA"]);
   assert.equal(result.title, "Dancing Queen");
   assert.equal(result.version, null);
   assert.deepEqual(result.featuring, []);
