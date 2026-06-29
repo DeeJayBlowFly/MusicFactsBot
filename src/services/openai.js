@@ -5,7 +5,9 @@ let client;
 
 function getClient() {
   if (!client) {
-    client = new OpenAI({
+    console.log("API key exists:", !!process.env.OPENAI_API_KEY);
+    console.log("Model:", process.env.OPENAI_MODEL);
+        client = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
     });
   }
@@ -15,12 +17,11 @@ function getClient() {
 
 async function ask(input) {
   const response = await retry(() =>
-    getClient().responses.create({
-      model: process.env.OPENAI_MODEL || "gpt-5-mini",
-      input,
-      timeout: 30000,
-    })
-  );
+  getClient().responses.create({
+    model: process.env.OPENAI_MODEL || "gpt-5-mini",
+    input,
+  })
+);
 
   return response.output_text.trim();
 }
