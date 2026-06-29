@@ -9,10 +9,16 @@ const factsRoutes = require("./routes/facts");
 async function buildApp() {
   const app = Fastify({
     logger: {
-      transport: {
-        target: "pino-pretty",
-      },
+  level: process.env.LOG_LEVEL || "info",
+  transport: {
+    target: "pino-pretty",
+    options: {
+      translateTime: "HH:MM:ss",
+      ignore: "pid,hostname",
+      colorize: true,
     },
+  },
+},
   });
 
   await app.register(cors);
