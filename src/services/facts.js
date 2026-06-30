@@ -6,6 +6,8 @@ const { getLanguage } = require("../utils/language");
 const cache = require("../cache");
 const { createCacheKey } = require("../cache/cacheKeys");
 
+const pending = new Map();
+
 async function getFact(track, lang = "en") {
   const key = createCacheKey(track, lang);
 
@@ -15,14 +17,29 @@ async function getFact(track, lang = "en") {
     return cached;
   }
 
-  const language = getLanguage(lang);
-  const prompt = buildPrompt(track, language);
+  if (pending.has(key)) {
+    return pending.get(key);
+  }
 
-  const fact = validateFact(await ask(prompt));
+  const promise = (async () => {
+    try {
+      const language = getLanguage(lang);
 
-  cache.set(key, fact);
+      const prompt = buildPrompt(track, language);
 
-  return fact;
+      const fact = validateFact(await ask(prompt));
+
+      cache.set(key, fact);
+
+      return fact;
+    } finally {
+      pending.delete(key);
+    }
+  })();
+
+  pending.set(key, promise);
+
+  return promise;
 }
 
 module.exports = {

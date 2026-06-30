@@ -1,8 +1,13 @@
 const fp = require("fastify-plugin");
 const tmi = require("tmi.js");
-const axios = require("axios");
+
+const { getFact } = require("../services/facts");
 
 const NOW_PLAYING_PREFIX = "Now Playing:";
+const FACT_DELAY = Number(process.env.FACT_DELAY || 8000);
+
+let lastTrack = "";
+let timer = null;
 
 async function twitchPlugin(fastify) {
   const client = new tmi.Client({
@@ -38,48 +43,48 @@ async function twitchPlugin(fastify) {
     console.log("USER:", tags.username);
     console.log("MESSAGE:", message);
 
-    // Gem Now Playing
-    if (
-  tags.username.toLowerCase() === "blowflymusicbot" &&
-  message.startsWith(NOW_PLAYING_PREFIX)
-) {
-      const track = message
-        .replace(NOW_PLAYING_PREFIX, "")
-        .replace(/"/g, "")
-        .trim();
+    if (tags.username.toLowerCase() !== "blowflymusicbot") return;
 
-      fastify.nowPlaying.set(track);
+    if (!message.startsWith(NOW_PLAYING_PREFIX)) return;
+
+    const track = message
+      .replace(NOW_PLAYING_PREFIX, "")
+      .replace(/"/g, "")
+      .replace(/\.$/, "")
+      .trim();
+
+    if (!track) return;
+
+    if (track === lastTrack) {
+      console.log("Duplicate track ignored");
       return;
     }
 
-    // !fact
-    if (message.trim().startsWith("!fact")) {
-      try {
-        const track = fastify.nowPlaying.get();
+    lastTrack = track;
 
-        if (!track) {
-          await client.say(channel, "🎵 Ingen sang registreret endnu.");
-          return;
-        }
+    fastify.nowPlaying.set(track);
 
-        const res = await axios.get(
-          `http://localhost:3000/facts?track=${encodeURIComponent(track)}&lang=de`
-        );
+    if (timer) clearTimeout(timer);
 
-        await client.say(channel, res.data.fact);
-      } catch (err) {
-        console.error(err.message);
-        await client.say(channel, "Kunne ikke hente musikfakta.");
-      }
-    }
+    const factPromise = getFact(track, "de");
+
+timer = setTimeout(async () => {
+  try {
+    console.log("Sending fact:", track);
+
+    const fact = await factPromise;
+
+    await client.say(channel, fact);
+
+    console.log("Fact sent.");
+  } catch (err) {
+    console.error(err);
+  }
+}, FACT_DELAY);
   });
 
   client.on("disconnected", (reason) => {
     console.log("DISCONNECTED:", reason);
-  });
-
-  client.on("notice", (channel, msgid, message) => {
-    console.log("NOTICE:", msgid, message);
   });
 
   await client.connect();
