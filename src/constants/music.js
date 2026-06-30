@@ -1,0 +1,8 @@
+module.exports = {
+  NOW_PLAYING_PREFIX: "Now Playing:",
+  DEFAULT_LANGUAGE: "de",
+  DEFAULT_DELAY: 500,
+  MAX_FACT_LENGTH: 350,
+  CACHE_HOURS: 2,
+  DUPLICATE_WINDOW: 30000,
+};
