@@ -28,6 +28,9 @@ async function buildApp() {
   await app.register(sensible);
 
   await app.register(swaggerPlugin);
+  await app.register(require("./plugins/twitch"));
+  await app.register(require("./plugins/nowPlaying"));
+  await app.register(require("./plugins/commands"));
   await app.register(rateLimitPlugin);
   await app.register(errorHandlerPlugin);
   await app.register(healthRoutes);
