@@ -1,3 +1,4 @@
+const { searchRecording } = require("../providers/musicbrainz");
 const { validateFact } = require("../utils/validateFact");
 const { ask } = require("./openai");
 const buildPrompt = require("../prompts/facts");
