@@ -1,8 +1,12 @@
-const { searchRecording } = require("../providers/musicbrainz");
+const { getRecording } = require("../providers/musicbrainz");
+const { getRelease } = require("../providers/discogs");
+const { getArticle } = require("../providers/wikipedia");
+
 const { validateFact } = require("../utils/validateFact");
 const { ask } = require("./openai");
 const buildPrompt = require("../prompts/facts");
 const { getLanguage } = require("../utils/language");
+const { parseTrack } = require("../utils/trackParser");
 
 const cache = require("../cache");
 const { createCacheKey } = require("../cache/cacheKeys");
@@ -11,12 +15,24 @@ const history = require("../cache/factHistory");
 const pending = new Map();
 
 async function generateFact(track, language) {
+  const parsed = parseTrack(track);
+
+  const musicbrainz = await getRecording(parsed.artist, parsed.title);
+  const discogs = await getRelease(parsed.artist, parsed.title);
+  const wikipedia = await getArticle(parsed.artist, parsed.title);
+
   let attempts = 0;
 
   while (attempts < 3) {
     attempts++;
 
-    const prompt = buildPrompt(track, language);
+    const prompt = buildPrompt({
+      track,
+      language,
+      musicbrainz,
+      discogs,
+      wikipedia,
+    });
 
     const fact = validateFact(await ask(prompt));
 
@@ -26,10 +42,12 @@ async function generateFact(track, language) {
     }
   }
 
-  return history.get(track).at(-1);
+  const previous = history.get(track);
+
+  return previous.length ? previous[previous.length - 1] : null;
 }
 
-async function getFact(track, lang = "en") {
+async function getFact(track, lang = "de") {
   const key = createCacheKey(track, lang);
 
   const cached = cache.get(key);
@@ -48,7 +66,9 @@ async function getFact(track, lang = "en") {
 
       const fact = await generateFact(track, language);
 
-      cache.set(key, fact);
+      if (fact) {
+        cache.set(key, fact);
+      }
 
       return fact;
     } finally {

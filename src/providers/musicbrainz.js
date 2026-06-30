@@ -1,31 +1,36 @@
-const { MusicBrainzApi } = require("musicbrainz-api");
-
-const client = new MusicBrainzApi({
-  appName: "AI-DeeJayBlowFly",
-  appVersion: "1.1.0",
-  appContactInfo: "https://github.com/DeeJayBlowFly/AI-DeeJayBlowFly",
-});
+const USER_AGENT = "AI-DeeJayBlowFly/1.1.0";
 
 async function getRecording(artist, title) {
   try {
-    const query = `artist:"${artist}" AND recording:"${title}"`;
+    const query = encodeURIComponent(
+      `artist:"${artist}" AND recording:"${title}"`
+    );
 
-    const result = await client.searchRecordings({
-      query,
-      limit: 1,
-    });
+    const response = await fetch(
+      `https://musicbrainz.org/ws/2/recording?query=${query}&fmt=json&limit=1`,
+      {
+        headers: {
+          "User-Agent": USER_AGENT,
+        },
+      }
+    );
 
-    if (!result.recordings?.length) {
+    if (!response.ok) return null;
+
+    const data = await response.json();
+
+    if (!data.recordings?.length) {
       return null;
     }
 
-    const recording = result.recordings[0];
+    const recording = data.recordings[0];
 
     return {
       artist,
       title,
       album: recording.releases?.[0]?.title || "",
-      year: recording.releases?.[0]?.date?.substring(0, 4) || "",
+      year: recording["first-release-date"]?.substring(0, 4) || "",
+      release: recording.releases?.[0]?.title || "",
       source: "musicbrainz",
     };
   } catch (err) {

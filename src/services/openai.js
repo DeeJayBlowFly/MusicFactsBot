@@ -5,9 +5,7 @@ let client;
 
 function getClient() {
   if (!client) {
-    console.log("API key exists:", !!process.env.OPENAI_API_KEY);
-    console.log("Model:", process.env.OPENAI_MODEL);
-        client = new OpenAI({
+    client = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
     });
   }
@@ -15,15 +13,53 @@ function getClient() {
   return client;
 }
 
-async function ask(input) {
+async function ask(prompt) {
   const response = await retry(() =>
-  getClient().responses.create({
-    model: process.env.OPENAI_MODEL || "gpt-5-mini",
-    input,
-  })
-);
+    getClient().responses.create({
+      model: process.env.OPENAI_MODEL || "gpt-5-mini",
+      input: prompt,
+      max_output_tokens: 400,
+      reasoning: {
+        effort: "minimal",
+      },
+    })
+  );
 
-  return response.output_text.trim();
+  console.log("\n========== OPENAI RESPONSE ==========");
+  console.dir(response, { depth: null });
+  console.log("=====================================\n");
+
+  if (
+    typeof response.output_text === "string" &&
+    response.output_text.trim().length > 0
+  ) {
+    return response.output_text.trim();
+  }
+
+  if (Array.isArray(response.output)) {
+    const parts = [];
+
+    for (const item of response.output) {
+      if (!Array.isArray(item.content)) continue;
+
+      for (const content of item.content) {
+        if (
+          (content.type === "output_text" || content.type === "text") &&
+          content.text
+        ) {
+          parts.push(content.text);
+        }
+      }
+    }
+
+    const text = parts.join("\n").trim();
+
+    if (text) {
+      return text;
+    }
+  }
+
+  throw new Error("OpenAI returned no text.");
 }
 
 module.exports = {

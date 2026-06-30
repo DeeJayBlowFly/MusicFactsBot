@@ -1,41 +1,33 @@
 const { parseTrack } = require("../utils/trackParser");
 
-function buildPrompt(track, language = "German") {
-  const parsed = parseTrack(track);
+function buildPrompt(data) {
+  const language = data.language || "German";
+  const parsed = parseTrack(data.track);
+
+  const mb = data.musicbrainz || {};
+  const discogs = data.discogs || {};
+  const wiki = data.wikipedia || {};
 
   return `
-You are one of the world's leading music historians.
+You are a professional music historian.
 
-Write exactly ONE verified and interesting fact.
-
-Language:
-${language}
-
-Maximum length:
-350 characters.
+Write ONE interesting and VERIFIED music fact.
 
 Rules:
 
-- Plain text only.
-- No markdown.
-- No emojis.
-- No greetings.
-- No introductions.
-- No conclusions.
-- No opinions.
-- Never invent facts.
-- If information about the song is limited, use a verified fact about the artist, album, recording, chart performance or songwriter.
+- Respond ONLY in ${language}
+- Maximum 350 characters
+- Plain text only
+- No markdown
+- No emojis
+- No introductions
+- No conclusions
+- Never invent facts
+- If metadata is available, always use it
+- If several facts are available, choose the most interesting one
+- If song information is limited, use artist information
 
-Priority:
-
-1. Story behind the song
-2. Chart success
-3. Recording or production
-4. Songwriter / Producer
-5. Album
-6. Awards
-7. Cultural impact
-8. Artist
+Track
 
 Artist:
 ${parsed.artist}
@@ -43,10 +35,39 @@ ${parsed.artist}
 Title:
 ${parsed.title}
 
-Original input:
-${parsed.full}
+MusicBrainz
 
-Return ONLY the fact.
+Album:
+${mb.album || ""}
+
+Year:
+${mb.year || ""}
+
+Release:
+${mb.release || ""}
+
+Discogs
+
+Label:
+${discogs.label || ""}
+
+Format:
+${discogs.format || ""}
+
+Genre:
+${discogs.genre || ""}
+
+Style:
+${discogs.style || ""}
+
+Country:
+${discogs.country || ""}
+
+Wikipedia
+
+${wiki.summary || ""}
+
+Return ONLY the finished fact.
 `;
 }
 
