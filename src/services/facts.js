@@ -5,8 +5,28 @@ const { getLanguage } = require("../utils/language");
 
 const cache = require("../cache");
 const { createCacheKey } = require("../cache/cacheKeys");
+const history = require("../cache/factHistory");
 
 const pending = new Map();
+
+async function generateFact(track, language) {
+  let attempts = 0;
+
+  while (attempts < 3) {
+    attempts++;
+
+    const prompt = buildPrompt(track, language);
+
+    const fact = validateFact(await ask(prompt));
+
+    if (!history.has(track, fact)) {
+      history.add(track, fact);
+      return fact;
+    }
+  }
+
+  return history.get(track).at(-1);
+}
 
 async function getFact(track, lang = "en") {
   const key = createCacheKey(track, lang);
@@ -25,9 +45,7 @@ async function getFact(track, lang = "en") {
     try {
       const language = getLanguage(lang);
 
-      const prompt = buildPrompt(track, language);
-
-      const fact = validateFact(await ask(prompt));
+      const fact = await generateFact(track, language);
 
       cache.set(key, fact);
 
