@@ -50,14 +50,46 @@ async function twitchPlugin(fastify) {
   client.on("message", async (channel, tags, message, self) => {
     if (self) return;
 
-    // Kun lyt til BlowFlyMusicBot
-    if (tags.username?.toLowerCase() !== "blowflymusicbot") {
+    const username = tags.username?.toLowerCase();
+
+// Tillad !testfact fra broadcaster/mod
+if (
+  message.toLowerCase().startsWith("!testfact ") &&
+  (tags.badges?.broadcaster || tags.mod)
+) {
+  // fortsæt
+} else if (username !== "blowflymusicbot") {
+  return;
+}
+
+    // Testkommando
+if (message.toLowerCase().startsWith("!testfact ")) {
+  try {
+    const track = message.substring(10).trim();
+
+    if (!track) {
+      await client.say(channel, "Brug: !testfact Artist - Titel");
       return;
     }
 
-    if (!message.startsWith(NOW_PLAYING_PREFIX)) {
-      return;
+    fastify.log.info(`TestFact: ${track}`);
+
+    const fact = await getFact(track, FACT_LANGUAGE);
+
+    if (fact) {
+      await client.say(channel, fact);
     }
+
+    return;
+  } catch (err) {
+    fastify.log.error(err);
+    return;
+  }
+}
+
+if (!message.startsWith(NOW_PLAYING_PREFIX)) {
+  return;
+}
 
     const track = message
       .replace(NOW_PLAYING_PREFIX, "")

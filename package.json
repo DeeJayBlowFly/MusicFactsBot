@@ -33,6 +33,7 @@
     "@fastify/swagger-ui": "^6.0.0",
     "auto-launch": "^5.0.6",
     "axios": "^1.18.1",
+    "better-sqlite3": "^12.11.1",
     "disconnect": "^1.2.2",
     "dotenv": "^17.4.2",
     "fastify": "^5.9.0",
