@@ -12,7 +12,6 @@ const FACT_DELAY = Number(process.env.FACT_DELAY || 500);
 const FACT_LANGUAGE = process.env.FACT_LANGUAGE || "de";
 
 async function twitchPlugin(fastify) {
-  // Skip Twitch completely during tests or when credentials are missing
   if (
     !process.env.TWITCH_USER ||
     !process.env.TWITCH_AUTH ||
@@ -52,11 +51,12 @@ async function twitchPlugin(fastify) {
 
   client.on("message", async (channel, tags, message, self) => {
     if (self) return;
-    if (!botRunning || !dashboard.running) {
-      return;
-    }
+    if (!botRunning || !dashboard.running) return;
 
-    const username = tags.username?.toLowerCase();
+    const username = (tags.username || "").toLowerCase();
+
+    // DEBUG
+    fastify.log.info(`CHAT | ${username}: ${message}`);
 
     // Tillad !testfact fra broadcaster/mod
     if (
@@ -67,10 +67,10 @@ async function twitchPlugin(fastify) {
     }
     // Tillad manuel Now Playing fra DeeJayBlowFly
     else if (
-      message.toLowerCase().startsWith("now playing:") &&
-      username === "deejayblowfly"
+      username === "deejayblowfly" &&
+      message.toLowerCase().startsWith("now playing:")
     ) {
-      // fortsæt
+      fastify.log.info("Manual Now Playing detected.");
     }
     // Automatisk Now Playing fra BlowFlyMusicBot
     else if (username !== "blowflymusicbot") {
@@ -107,7 +107,7 @@ async function twitchPlugin(fastify) {
     }
 
     const track = message
-      .replace(NOW_PLAYING_PREFIX, "")
+      .substring(NOW_PLAYING_PREFIX.length)
       .replace(/"/g, "")
       .replace(/\.$/, "")
       .trim();
@@ -122,12 +122,12 @@ async function twitchPlugin(fastify) {
     fastify.log.info(`Now Playing: ${track}`);
 
     fastify.nowPlaying.set(track);
+
     dashboard.track = track;
     dashboard.uniqueSongs.add(track);
 
     clearTimeout(timer);
 
-    // Start OpenAI med det samme
     const factPromise = getFact(track, FACT_LANGUAGE);
 
     timer = setTimeout(async () => {
@@ -142,6 +142,7 @@ async function twitchPlugin(fastify) {
         dashboard.factsSent++;
 
         fastify.log.info("Music fact sent");
+
       } catch (err) {
         fastify.log.error(err);
       }
