@@ -4,6 +4,7 @@ const tmi = require("tmi.js");
 const { getFact } = require("../services/facts");
 const trackCache = require("../cache/trackCache");
 const dashboard = require("../dashboard/state");
+
 let botRunning = true;
 
 const NOW_PLAYING_PREFIX = "Now Playing:";
@@ -52,49 +53,58 @@ async function twitchPlugin(fastify) {
   client.on("message", async (channel, tags, message, self) => {
     if (self) return;
     if (!botRunning || !dashboard.running) {
-  return;
-}
-
-    const username = tags.username?.toLowerCase();
-
-// Tillad !testfact fra broadcaster/mod
-if (
-  message.toLowerCase().startsWith("!testfact ") &&
-  (tags.badges?.broadcaster || tags.mod)
-) {
-  // fortsæt
-} else if (username !== "blowflymusicbot") {
-  return;
-}
-
-    // Testkommando
-if (message.toLowerCase().startsWith("!testfact ")) {
-  try {
-    const track = message.substring(10).trim();
-
-    if (!track) {
-      await client.say(channel, "Brug: !testfact Artist - Titel");
       return;
     }
 
-    fastify.log.info(`TestFact: ${track}`);
+    const username = tags.username?.toLowerCase();
 
-    const fact = await getFact(track, FACT_LANGUAGE);
-
-    if (fact) {
-      await client.say(channel, fact);
+    // Tillad !testfact fra broadcaster/mod
+    if (
+      message.toLowerCase().startsWith("!testfact ") &&
+      (tags.badges?.broadcaster || tags.mod)
+    ) {
+      // fortsæt
+    }
+    // Tillad manuel Now Playing fra DeeJayBlowFly
+    else if (
+      message.toLowerCase().startsWith("now playing:") &&
+      username === "deejayblowfly"
+    ) {
+      // fortsæt
+    }
+    // Automatisk Now Playing fra BlowFlyMusicBot
+    else if (username !== "blowflymusicbot") {
+      return;
     }
 
-    return;
-  } catch (err) {
-    fastify.log.error(err);
-    return;
-  }
-}
+    // Testkommando
+    if (message.toLowerCase().startsWith("!testfact ")) {
+      try {
+        const track = message.substring(10).trim();
 
-if (!message.startsWith(NOW_PLAYING_PREFIX)) {
-  return;
-}
+        if (!track) {
+          await client.say(channel, "Brug: !testfact Artist - Titel");
+          return;
+        }
+
+        fastify.log.info(`TestFact: ${track}`);
+
+        const fact = await getFact(track, FACT_LANGUAGE);
+
+        if (fact) {
+          await client.say(channel, fact);
+        }
+
+        return;
+      } catch (err) {
+        fastify.log.error(err);
+        return;
+      }
+    }
+
+    if (!message.toLowerCase().startsWith("now playing:")) {
+      return;
+    }
 
     const track = message
       .replace(NOW_PLAYING_PREFIX, "")
@@ -127,6 +137,7 @@ if (!message.startsWith(NOW_PLAYING_PREFIX)) {
         if (!fact) return;
 
         await client.say(channel, fact);
+
         dashboard.fact = fact;
         dashboard.factsSent++;
 
@@ -141,6 +152,7 @@ if (!message.startsWith(NOW_PLAYING_PREFIX)) {
 
   fastify.decorate("twitch", client);
 }
+
 fp.startBot = () => {
   botRunning = true;
   dashboard.running = true;
@@ -152,4 +164,5 @@ fp.stopBot = () => {
   dashboard.running = false;
   dashboard.addLog("Bot stopped from Desktop.");
 };
+
 module.exports = fp(twitchPlugin);
