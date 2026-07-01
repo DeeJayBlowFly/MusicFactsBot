@@ -145,7 +145,7 @@ document.getElementById("manualNowPlaying").onclick = async () => {
 
     try {
 
-        const result = await api("/api/testfact", "POST", { track });
+        const result = await api("/api/manual-now-playing", "POST", { track });
 
         if (!result.success) {
             addLog("ERROR: " + (result.error || result.message));
@@ -155,7 +155,7 @@ document.getElementById("manualNowPlaying").onclick = async () => {
         document.getElementById("track").textContent = track;
         document.getElementById("fact").textContent = result.fact;
 
-        addLog("Manual Now Playing sent.");
+        addLog("Manual Now Playing updated.");
 
         document.getElementById("testTrack").value = "";
 
