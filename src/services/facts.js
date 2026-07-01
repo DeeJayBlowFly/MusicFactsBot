@@ -14,17 +14,17 @@ const history = require("../cache/factHistory");
 
 const pending = new Map();
 
-async function generateFact(track, language) {
+async function createNewFact(track, language) {
   const parsed = parseTrack(track);
 
-  const musicbrainz = await getRecording(parsed.artist, parsed.title);
-  const discogs = await getRelease(parsed.artist, parsed.title);
-  const wikipedia = await getArticle(parsed.artist, parsed.title);
+  const [musicbrainz, discogs, wikipedia] = await Promise.all([
+    getRecording(parsed.artist, parsed.title),
+    getRelease(parsed.artist, parsed.title),
+    getArticle(parsed.artist, parsed.title),
+  ]);
 
-  let attempts = 0;
-
-  while (attempts < 3) {
-    attempts++;
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const previousFacts = history.get(track);
 
     const prompt = buildPrompt({
       track,
@@ -32,6 +32,7 @@ async function generateFact(track, language) {
       musicbrainz,
       discogs,
       wikipedia,
+      previousFacts,
     });
 
     const fact = validateFact(await ask(prompt));
@@ -44,17 +45,13 @@ async function generateFact(track, language) {
 
   const previous = history.get(track);
 
-  return previous.length ? previous[previous.length - 1] : null;
+  return previous.length
+    ? previous[Math.floor(Math.random() * previous.length)]
+    : null;
 }
 
 async function getFact(track, lang = "de") {
   const key = createCacheKey(track, lang);
-
-  const cached = cache.get(key);
-
-  if (cached) {
-    return cached;
-  }
 
   if (pending.has(key)) {
     return pending.get(key);
@@ -64,9 +61,19 @@ async function getFact(track, lang = "de") {
     try {
       const language = getLanguage(lang);
 
-      const fact = await generateFact(track, language);
+      // Brug cache kun første gang
+      if (!history.count(track)) {
+        const cached = cache.get(key);
 
-      if (fact) {
+        if (cached) {
+          history.add(track, cached);
+          return cached;
+        }
+      }
+
+      const fact = await createNewFact(track, language);
+
+      if (fact && !cache.get(key)) {
         cache.set(key, fact);
       }
 

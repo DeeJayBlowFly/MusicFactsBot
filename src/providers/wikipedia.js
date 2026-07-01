@@ -1,27 +1,71 @@
 const wiki = require("wikijs").default;
 
+function clean(text) {
+  return text
+    .replace(/\s+/g, " ")
+    .replace(/\([^)]*\)/g, "")
+    .replace(/\[[^\]]*]/g, "")
+    .trim();
+}
+
+function shorten(text, max = 500) {
+  if (!text || text.length <= max) {
+    return text;
+  }
+
+  const cut = text.lastIndexOf(".", max);
+
+  if (cut > 100) {
+    return text.substring(0, cut + 1);
+  }
+
+  return text.substring(0, max) + "...";
+}
+
+async function tryPage(query) {
+  try {
+    return await wiki().page(query);
+  } catch {
+    return null;
+  }
+}
+
 async function getArticle(artist, title) {
   const queries = [
-    `${artist} ${title}`,
     `${title} (${artist} song)`,
+    `${artist} ${title}`,
     `${title} song`,
-    `${artist}`,
+    `${title}`,
+    artist,
   ];
 
   for (const query of queries) {
-    try {
-      const page = await wiki().page(query);
+    const page = await tryPage(query);
 
-      return {
-        artist,
-        title,
-        summary: (await page.summary()).replace(/\s+/g, " ").trim(),
-        url: page.raw.fullurl,
-        source: "wikipedia",
-      };
-    } catch {
-      // prøv næste søgning
+    if (!page) {
+      continue;
     }
+
+    let summary = "";
+
+    try {
+      summary = await page.summary();
+    } catch {
+      continue;
+    }
+
+    summary = shorten(clean(summary));
+
+    if (!summary) {
+      continue;
+    }
+
+    return {
+      artist,
+      title,
+      summary,
+      source: "wikipedia",
+    };
   }
 
   return null;

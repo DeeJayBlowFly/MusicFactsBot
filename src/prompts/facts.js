@@ -1,4 +1,5 @@
 const { parseTrack } = require("../utils/trackParser");
+const { randomTopic } = require("../utils/factTopics");
 
 function buildPrompt(data) {
   const language = data.language || "German";
@@ -8,34 +9,41 @@ function buildPrompt(data) {
   const discogs = data.discogs || {};
   const wiki = data.wikipedia || {};
 
-  return `
-You are a professional music historian.
+  const previousFacts = (data.previousFacts || []).join("\n- ");
 
-Write ONE interesting and VERIFIED music fact.
+  const topic = randomTopic();
+
+  return `
+You are an experienced music journalist.
+
+Write ONE verified and interesting music fact.
+
+Language:
+${language}
+
+Today's topic:
+${topic}
 
 Rules:
 
-- Respond ONLY in ${language}
-- Maximum 350 characters
-- Plain text only
-- No markdown
-- No emojis
-- No introductions
-- No conclusions
-- Never invent facts
-- If metadata is available, always use it
-- If several facts are available, choose the most interesting one
-- If song information is limited, use artist information
+- Maximum 350 characters.
+- Plain text only.
+- No markdown.
+- No emojis.
+- Never invent facts.
+- Do NOT repeat any previous fact.
+- Prefer surprising or little-known information.
+- Avoid generic phrases like "was a successful hit".
+- If information for today's topic is unavailable, choose the next best verified fact.
 
-Track
+Previous facts:
+- ${previousFacts || "None"}
 
 Artist:
 ${parsed.artist}
 
-Title:
+Song:
 ${parsed.title}
-
-MusicBrainz
 
 Album:
 ${mb.album || ""}
@@ -46,13 +54,8 @@ ${mb.year || ""}
 Release:
 ${mb.release || ""}
 
-Discogs
-
 Label:
 ${discogs.label || ""}
-
-Format:
-${discogs.format || ""}
 
 Genre:
 ${discogs.genre || ""}
@@ -63,8 +66,7 @@ ${discogs.style || ""}
 Country:
 ${discogs.country || ""}
 
-Wikipedia
-
+Background:
 ${wiki.summary || ""}
 
 Return ONLY the finished fact.
