@@ -6,10 +6,10 @@ const { getFact } = require("../services/facts");
 async function dashboardPlugin(fastify) {
 
   await fastify.register(require("@fastify/static"), {
-  root: path.join(__dirname, "..", "..", "public"),
-  prefix: "/",
-  index: "index.html",
-});
+    root: path.join(__dirname, "..", "..", "public"),
+    prefix: "/",
+    index: "index.html",
+  });
 
   fastify.get("/api/dashboard", async () => ({
     running: state.running,
@@ -27,35 +27,35 @@ async function dashboardPlugin(fastify) {
 
   fastify.post("/api/start", async () => {
 
-  state.running = true;
+    state.running = true;
 
-  if (fastify.twitch?.startBot) {
-    fastify.twitch.startBot();
-  }
+    if (fastify.twitch?.startBot) {
+      fastify.twitch.startBot();
+    }
 
-  state.addLog("Bot started.");
+    state.addLog("Bot started.");
 
-  return {
-    success: true
-  };
+    return {
+      success: true
+    };
 
-});
+  });
 
   fastify.post("/api/stop", async () => {
 
-  state.running = false;
+    state.running = false;
 
-  if (fastify.twitch?.stopBot) {
-    fastify.twitch.stopBot();
-  }
+    if (fastify.twitch?.stopBot) {
+      fastify.twitch.stopBot();
+    }
 
-  state.addLog("Bot stopped.", "WARN");
+    state.addLog("Bot stopped.", "WARN");
 
-  return {
-    success: true
-  };
+    return {
+      success: true
+    };
 
-});
+  });
 
   fastify.post("/api/testfact", async (request) => {
 
@@ -99,6 +99,67 @@ async function dashboardPlugin(fastify) {
 
       return {
         success: true,
+        fact,
+      };
+
+    } catch (err) {
+
+      state.setStatus("openai", false);
+
+      state.addLog(err.message, "ERROR");
+
+      return {
+        success: false,
+        error: err.message,
+      };
+
+    }
+
+  });
+
+  fastify.post("/api/manual-now-playing", async (request) => {
+
+    try {
+
+      const { track } = request.body || {};
+
+      if (!track) {
+        state.addLog("Missing track.", "ERROR");
+
+        return {
+          success: false,
+          message: "Missing track"
+        };
+      }
+
+      state.addLog(`Manual Now Playing "${track}"`);
+
+      const started = Date.now();
+
+      const fact = await getFact(
+        track,
+        process.env.FACT_LANGUAGE || "de"
+      );
+
+      state.setResponseTime(Date.now() - started);
+
+      state.track = track;
+      state.fact = fact;
+      state.factsSent++;
+      state.uniqueSongs.add(track);
+
+      state.setStatus("openai", true);
+      state.setStatus("musicbrainz", true);
+      state.setStatus("discogs", true);
+      state.setStatus("wikipedia", true);
+
+      state.addLog(
+        `Manual Now Playing updated in ${state.lastResponseTime} ms`
+      );
+
+      return {
+        success: true,
+        track,
         fact,
       };
 
