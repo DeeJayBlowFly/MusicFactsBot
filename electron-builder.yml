@@ -1,0 +1,37 @@
+appId: dk.deejayblowfly.ai
+
+productName: AI-DeeJayBlowFly
+
+directories:
+  output: dist
+
+files:
+  - src/**
+  - public/**
+  - desktop/**
+  - assets/**
+  - package.json
+  - node_modules/**
+
+extraMetadata:
+  main: desktop/main.js
+
+asar: true
+
+compression: maximum
+
+win:
+  target:
+    - nsis
+  icon: assets/icon.ico
+
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: always
+  createStartMenuShortcut: true
+  shortcutName: AI-DeeJayBlowFly
+  artifactName: AI-DeeJayBlowFly-Setup-${version}.${ext}
+
+publish: null

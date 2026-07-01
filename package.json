@@ -1,43 +1,67 @@
 {
-  "name": "musicfactsbot",
-  "version": "1.0.0",
-  "description": "",
-  "main": "src/server.js",
-  "scripts": {
-    "dev": "nodemon src/server.js",
-    "start": "node src/server.js",
-    "lint": "eslint .",
-    "format": "prettier --write .",
-    "test": "node --test"
+  "name": "ai-deejayblowfly",
+  "version": "1.0.0-rc1",
+  "description": "AI-powered Twitch Music Facts Bot",
+  "main": "desktop/main.js",
+  "type": "commonjs",
+  "license": "MIT",
+  "author": "DeeJay BlowFly",
+  "homepage": "https://github.com/DeeJayBlowFly/MusicFactsBot",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DeeJayBlowFly/MusicFactsBot.git"
+  },
+  "bugs": {
+    "url": "https://github.com/DeeJayBlowFly/MusicFactsBot/issues"
   },
   "engines": {
     "node": ">=24 <25"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/DeeJayBlowFly/MusicFactsBot.git"
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "test": "node --test",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "desktop": "electron .",
+    "dist": "electron-builder",
+    "clean": "git clean -xfd"
   },
-  "keywords": [],
-  "author": "",
-  "license": "MIT",
-  "type": "commonjs",
-  "bugs": {
-    "url": "https://github.com/DeeJayBlowFly/MusicFactsBot/issues"
+  "build": {
+    "appId": "dk.deejayblowfly.ai",
+    "productName": "AI-DeeJayBlowFly",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "src/**/*",
+      "public/**/*",
+      "desktop/**/*",
+      "assets/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
   },
-  "homepage": "https://github.com/DeeJayBlowFly/MusicFactsBot#readme",
   "dependencies": {
     "@fastify/cors": "^11.2.0",
     "@fastify/rate-limit": "^11.1.0",
     "@fastify/sensible": "^6.0.4",
+    "@fastify/static": "^9.1.3",
     "@fastify/swagger": "^9.7.0",
     "@fastify/swagger-ui": "^6.0.0",
     "auto-launch": "^5.0.6",
     "axios": "^1.18.1",
-    "better-sqlite3": "^12.11.1",
-    "disconnect": "^1.2.2",
     "dotenv": "^17.4.2",
     "fastify": "^5.9.0",
-    "musicbrainz-api": "^1.2.1",
     "openai": "^6.45.0",
     "pino": "^10.3.1",
     "pino-pretty": "^13.1.3",

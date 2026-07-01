@@ -2,22 +2,28 @@ require("dotenv").config();
 
 const buildApp = require("./app");
 
-const PORT = process.env.PORT || 3000;
-
-async function start() {
+async function start(options = {}) {
   const app = await buildApp();
 
-  try {
+  if (!options.embedded) {
+    const port = process.env.PORT || 3000;
+
     await app.listen({
-      port: PORT,
-      host: "0.0.0.0",
+      port,
+      host: "0.0.0.0"
     });
 
-    app.log.info(`MusicFactsBot running on port ${PORT}`);
-  } catch (err) {
-    app.log.error(err);
-    process.exit(1);
+    app.log.info(`AI-DeeJayBlowFly listening on ${port}`);
   }
+
+  return app;
 }
 
-start();
+if (require.main === module) {
+  start().catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
+}
+
+module.exports = start;

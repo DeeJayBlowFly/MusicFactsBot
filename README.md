@@ -1,37 +1,39 @@
-# 🎵 MusicFactsBot
+# 🎧 AI-DeeJayBlowFly
 
-AI-powered music facts API for Twitch bots and streaming applications.
+AI-powered Twitch Music Facts Bot for DJs and music streamers.
 
-Built with Fastify 5, Node.js 24 and OpenAI Responses API.
-
----
-
-## Features
-
-- ⚡ Fastify 5
-- 🤖 OpenAI SDK v6 (Responses API)
-- 🎵 AI-generated music facts
-- 🌍 Danish, English and German
-- 🧠 Intelligent track parser
-- 🚀 In-memory cache
-- ✅ Input validation
-- 📚 Swagger / OpenAPI
-- 🛡️ Global Rate Limiting
-- ❤️ Health endpoint
-- 🔖 Version endpoint
-- 🧪 Automated tests
-- 🔄 GitHub Actions CI
+Automatically listens for **Now Playing** messages in Twitch chat and responds with unique AI-generated music facts.
 
 ---
 
-## Requirements
+# Features
 
-- Node.js 24 LTS
-- OpenAI API Key
+- 🎵 Automatic Now Playing detection
+- 🤖 GPT-5 Mini (OpenAI Responses API)
+- 📀 MusicBrainz metadata
+- 💿 Discogs metadata
+- 📚 Wikipedia integration
+- 🇩🇪 German music facts
+- 🔁 No repeated facts
+- ⚡ Intelligent cache
+- 📊 Live Dashboard
+- 🧪 Test Fact
+- ❤️ Health API
+- 📖 Swagger
+- ✅ Automated tests
 
 ---
 
-## Installation
+# Requirements
+
+- Node.js 24
+- OpenAI API key
+- Twitch Bot Account
+- Twitch OAuth Token
+
+---
+
+# Installation
 
 ```bash
 git clone https://github.com/DeeJayBlowFly/MusicFactsBot.git
@@ -41,94 +43,136 @@ cd MusicFactsBot
 npm install
 ```
 
-Create a `.env` file:
+Create:
+
+```
+.env
+```
+
+Example:
 
 ```env
-OPENAI_API_KEY=your_api_key
+OPENAI_API_KEY=
+
 OPENAI_MODEL=gpt-5-mini
+
+TWITCH_USER=
+
+TWITCH_AUTH=
+
+CHANNELS=
+
+FACT_LANGUAGE=de
+
+FACT_DELAY=500
+
 PORT=3000
-RATE_LIMIT_MAX=60
-RATE_LIMIT_WINDOW=1 minute
 ```
 
-Start development:
+---
 
-```bash
-npm run dev
-```
-
-Production:
+# Start
 
 ```bash
 npm start
 ```
 
----
-
-## API
-
-### Health
+Dashboard:
 
 ```
-GET /health
+http://localhost:3000
 ```
 
-### Version
-
-```
-GET /version
-```
-
-### Music Facts
-
-```
-GET /facts
-```
-
-Example:
-
-```
-GET /facts?track=Modern Talking - Cheri Cheri Lady&lang=en
-```
-
----
-
-## Swagger
+Swagger:
 
 ```
 http://localhost:3000/docs
 ```
 
-OpenAPI JSON:
+---
+
+# Streaming Setup
+
+## Streaming PC
+
+- OBS
+- VirtualDJ
+- BlowFlyMusicBot
+
+BlowFlyMusicBot writes:
 
 ```
-http://localhost:3000/docs/json
+Now Playing: Modern Talking - Cheri Cheri Lady
 ```
+
+to Twitch chat.
 
 ---
 
-## Tests
+## AI PC
 
-Run all tests:
+Runs:
+
+```
+AI-DeeJayBlowFly
+```
+
+The bot:
+
+- listens to Twitch chat
+- detects Now Playing
+- gathers metadata
+- generates a music fact
+- posts it back to chat
+
+---
+
+# Dashboard
+
+Shows
+
+- Status
+- Now Playing
+- Latest Fact
+- Statistics
+- Live Log
+
+---
+
+# Test
+
+Chat:
+
+```
+!testfact ABBA - Dancing Queen
+```
+
+or use the Dashboard Test button.
+
+---
+
+# Build Desktop
+
+Development
 
 ```bash
-npm test
+npm run desktop
 ```
 
-Current status:
+Windows Installer
 
-```
-18 tests passing
+```bash
+npm run dist
 ```
 
 ---
 
-## Deployment
+# License
 
-Ready for deployment on Render.
+MIT
 
 ---
 
-## License
+# Version
 
-MIT License
+v1.0 RC1

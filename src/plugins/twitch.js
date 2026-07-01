@@ -3,6 +3,8 @@ const tmi = require("tmi.js");
 
 const { getFact } = require("../services/facts");
 const trackCache = require("../cache/trackCache");
+const dashboard = require("../dashboard/state");
+let botRunning = true;
 
 const NOW_PLAYING_PREFIX = "Now Playing:";
 const FACT_DELAY = Number(process.env.FACT_DELAY || 500);
@@ -49,6 +51,9 @@ async function twitchPlugin(fastify) {
 
   client.on("message", async (channel, tags, message, self) => {
     if (self) return;
+    if (!botRunning || !dashboard.running) {
+  return;
+}
 
     const username = tags.username?.toLowerCase();
 
@@ -107,6 +112,8 @@ if (!message.startsWith(NOW_PLAYING_PREFIX)) {
     fastify.log.info(`Now Playing: ${track}`);
 
     fastify.nowPlaying.set(track);
+    dashboard.track = track;
+    dashboard.uniqueSongs.add(track);
 
     clearTimeout(timer);
 
@@ -120,6 +127,8 @@ if (!message.startsWith(NOW_PLAYING_PREFIX)) {
         if (!fact) return;
 
         await client.say(channel, fact);
+        dashboard.fact = fact;
+        dashboard.factsSent++;
 
         fastify.log.info("Music fact sent");
       } catch (err) {
@@ -132,5 +141,15 @@ if (!message.startsWith(NOW_PLAYING_PREFIX)) {
 
   fastify.decorate("twitch", client);
 }
+fp.startBot = () => {
+  botRunning = true;
+  dashboard.running = true;
+  dashboard.addLog("Bot started from Desktop.");
+};
 
+fp.stopBot = () => {
+  botRunning = false;
+  dashboard.running = false;
+  dashboard.addLog("Bot stopped from Desktop.");
+};
 module.exports = fp(twitchPlugin);
