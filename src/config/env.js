@@ -1,4 +1,23 @@
-require("dotenv").config();
+const fs = require("fs");
+const path = require("path");
+const dotenv = require("dotenv");
+
+const localEnv = path.resolve(process.cwd(), ".env");
+
+const userEnv = process.env.APPDATA
+  ? path.join(process.env.APPDATA, "AI-DeeJayBlowFly", "config.env")
+  : null;
+
+if (userEnv && fs.existsSync(userEnv)) {
+  dotenv.config({
+    path: userEnv,
+    override: true,
+  });
+} else {
+  dotenv.config({
+    path: localEnv,
+  });
+}
 
 function getEnv(name, fallback) {
   const value = process.env[name];
@@ -14,7 +33,7 @@ function getEnv(name, fallback) {
   throw new Error(`Missing environment variable: ${name}`);
 }
 
-const config = {
+module.exports = {
   app: {
     name: "MusicFactsBot",
     version: "2.0.0",
@@ -26,5 +45,3 @@ const config = {
     model: getEnv("OPENAI_MODEL", "gpt-5-mini"),
   },
 };
-
-module.exports = config;

@@ -1,16 +1,31 @@
-require("dotenv").config();
+const fs = require("fs");
+const path = require("path");
+const dotenv = require("dotenv");
+
+const appDataDir = path.join(process.env.APPDATA || process.cwd(), "AI-DeeJayBlowFly");
+const appDataEnv = path.join(appDataDir, "config.env");
+
+if (fs.existsSync(appDataEnv)) {
+  dotenv.config({ path: appDataEnv });
+  console.log("Using config:", appDataEnv);
+} else {
+  dotenv.config();
+  console.log("Using local .env");
+}
 
 const buildApp = require("./app");
 
-async function start(options = {}) {
+async function start({
+  port = process.env.PORT || 3000,
+  host = "127.0.0.1",
+  embedded = false,
+} = {}) {
   const app = await buildApp();
 
-  if (!options.embedded) {
-    const port = process.env.PORT || 3000;
-
+  if (!embedded) {
     await app.listen({
       port,
-      host: "0.0.0.0"
+      host,
     });
 
     app.log.info(`AI-DeeJayBlowFly listening on ${port}`);

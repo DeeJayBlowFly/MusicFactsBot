@@ -6,9 +6,10 @@ const { getFact } = require("../services/facts");
 async function dashboardPlugin(fastify) {
 
   await fastify.register(require("@fastify/static"), {
-    root: path.join(process.cwd(), "public"),
-    prefix: "/",
-  });
+  root: path.join(__dirname, "..", "..", "public"),
+  prefix: "/",
+  index: "index.html",
+});
 
   fastify.get("/api/dashboard", async () => ({
     running: state.running,

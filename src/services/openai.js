@@ -1,13 +1,16 @@
 const OpenAI = require("openai");
+const config = require("../config/env");
 const { retry } = require("../utils/retry");
 
 let client;
 
 function getClient() {
   if (!client) {
+    console.log("OPENAI_API_KEY =", process.env.OPENAI_API_KEY);
+    console.log("OPENAI_MODEL =", process.env.OPENAI_MODEL);
     client = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
-    });
+  apiKey: config.openai.apiKey,
+});
   }
 
   return client;
@@ -16,7 +19,7 @@ function getClient() {
 async function ask(prompt) {
   const response = await retry(() =>
     getClient().responses.create({
-      model: process.env.OPENAI_MODEL || "gpt-5-mini",
+      model: config.openai.model,
       input: prompt,
       max_output_tokens: 400,
       reasoning: {
@@ -25,10 +28,7 @@ async function ask(prompt) {
     })
   );
 
-  console.log("\n========== OPENAI RESPONSE ==========");
-  console.dir(response, { depth: null });
-  console.log("=====================================\n");
-
+  
   if (
     typeof response.output_text === "string" &&
     response.output_text.trim().length > 0

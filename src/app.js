@@ -17,7 +17,9 @@ const factsRoutes = require("./routes/facts");
 
 async function buildApp() {
   const app = Fastify({
-    logger: {
+    logger: process.env.NODE_ENV === "production"
+  ? true
+  : {
       level: process.env.LOG_LEVEL || "info",
       transport: {
         target: "pino-pretty",

@@ -1,5 +1,9 @@
 const wiki = require("wikijs").default;
 
+const wikipedia = wiki({
+  apiUrl: "https://de.wikipedia.org/w/api.php",
+});
+
 function clean(text) {
   return text
     .replace(/\s+/g, " ")
@@ -24,7 +28,7 @@ function shorten(text, max = 500) {
 
 async function tryPage(query) {
   try {
-    return await wiki().page(query);
+    return await wikipedia.page(query);
   } catch {
     return null;
   }
