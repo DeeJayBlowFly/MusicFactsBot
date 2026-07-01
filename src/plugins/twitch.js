@@ -50,12 +50,21 @@ async function twitchPlugin(fastify) {
   });
 
   client.on("message", async (channel, tags, message, self) => {
-    if (self) return;
-    if (!botRunning || !dashboard.running) return;
+
+    // Tillad egne "Now Playing:" beskeder
+    if (
+      self &&
+      !message.toLowerCase().startsWith("now playing:")
+    ) {
+      return;
+    }
+
+    if (!botRunning || !dashboard.running) {
+      return;
+    }
 
     const username = (tags.username || "").toLowerCase();
 
-    // DEBUG
     fastify.log.info(`CHAT | ${username}: ${message}`);
 
     // Tillad !testfact fra broadcaster/mod
@@ -79,7 +88,9 @@ async function twitchPlugin(fastify) {
 
     // Testkommando
     if (message.toLowerCase().startsWith("!testfact ")) {
+
       try {
+
         const track = message.substring(10).trim();
 
         if (!track) {
@@ -96,10 +107,14 @@ async function twitchPlugin(fastify) {
         }
 
         return;
+
       } catch (err) {
+
         fastify.log.error(err);
         return;
+
       }
+
     }
 
     if (!message.toLowerCase().startsWith("now playing:")) {
@@ -131,7 +146,9 @@ async function twitchPlugin(fastify) {
     const factPromise = getFact(track, FACT_LANGUAGE);
 
     timer = setTimeout(async () => {
+
       try {
+
         const fact = await factPromise;
 
         if (!fact) return;
@@ -144,9 +161,13 @@ async function twitchPlugin(fastify) {
         fastify.log.info("Music fact sent");
 
       } catch (err) {
+
         fastify.log.error(err);
+
       }
+
     }, FACT_DELAY);
+
   });
 
   await client.connect();
