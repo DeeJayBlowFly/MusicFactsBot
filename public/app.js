@@ -134,6 +134,47 @@ document.getElementById("test").onclick = async () => {
 
 };
 
+document.getElementById("manualNowPlaying").onclick = async () => {
+
+    const track = document.getElementById("testTrack").value.trim();
+
+    if (!track) {
+        addLog("Please enter Artist - Title");
+        return;
+    }
+
+    try {
+
+        const result = await api("/api/testfact", "POST", { track });
+
+        if (!result.success) {
+            addLog("ERROR: " + (result.error || result.message));
+            return;
+        }
+
+        document.getElementById("track").textContent = track;
+        document.getElementById("fact").textContent = result.fact;
+
+        addLog("Manual Now Playing sent.");
+
+        document.getElementById("testTrack").value = "";
+
+    } catch (err) {
+
+        addLog("ERROR: " + err.message);
+
+    }
+
+};
+
+document.getElementById("testTrack").addEventListener("keydown", (e) => {
+
+    if (e.key === "Enter") {
+        document.getElementById("manualNowPlaying").click();
+    }
+
+});
+
 refresh();
 
 setInterval(refresh, 1000);
