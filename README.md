@@ -13,7 +13,7 @@ Automatically listens for **Now Playing** messages in Twitch chat and responds w
 - 📀 MusicBrainz metadata
 - 💿 Discogs metadata
 - 📚 Wikipedia integration
-- 🇩🇪 German music facts
+- 🚩 German,English or Danish music facts
 - 🔁 No repeated facts
 - ⚡ Intelligent cache
 - 📊 Live Dashboard
