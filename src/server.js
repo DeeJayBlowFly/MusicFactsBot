@@ -13,7 +13,7 @@ if (fs.existsSync(appDataEnv)) {
   console.log("Using local .env");
 }
 
-const buildApp = require("./app");
+const buildApp = require("./services/app");
 
 async function start({
   port = process.env.PORT || 3000,

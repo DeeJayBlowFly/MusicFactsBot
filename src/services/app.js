@@ -2,18 +2,18 @@ const Fastify = require("fastify");
 const cors = require("@fastify/cors");
 const sensible = require("@fastify/sensible");
 
-const swaggerPlugin = require("./plugins/swagger");
-const twitchPlugin = require("./plugins/twitch");
-const nowPlayingPlugin = require("./plugins/nowPlaying");
-const commandsPlugin = require("./plugins/commands");
-const errorHandlerPlugin = require("./plugins/errorHandler");
-const rateLimitPlugin = require("./plugins/rateLimit");
+const swaggerPlugin = require("../plugins/swagger");
+const twitchPlugin = require("../plugins/twitch");
+const nowPlayingPlugin = require("../plugins/nowPlaying");
+const commandsPlugin = require("../plugins/commands");
+const errorHandlerPlugin = require("../plugins/errorHandler");
+const rateLimitPlugin = require("../plugins/rateLimit");
 
-const dashboardPlugin = require("./dashboard/server");
+const dashboardPlugin = require("../dashboard/server");
 
-const healthRoutes = require("./routes/health");
-const versionRoutes = require("./routes/version");
-const factsRoutes = require("./routes/facts");
+const healthRoutes = require("../routes/health");
+const versionRoutes = require("../routes/version");
+const factsRoutes = require("../routes/facts");
 
 async function buildApp() {
   const app = Fastify({

@@ -1,6 +1,6 @@
 const OpenAI = require("openai");
-const config = require("../config/env");
-const { retry } = require("../utils/retry");
+const config = require("./config/env");
+const { retry } = require("./utils/retry");
 
 let client;
 

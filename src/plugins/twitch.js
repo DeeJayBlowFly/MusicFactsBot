@@ -42,12 +42,14 @@ async function twitchPlugin(fastify) {
   let timer = null;
 
   client.on("connected", () => {
-    fastify.log.info("Twitch bot connected");
-  });
+  dashboard.setStatus("twitch", true);
+  fastify.log.info("Twitch bot connected");
+});
 
   client.on("disconnected", (reason) => {
-    fastify.log.warn(`Twitch disconnected: ${reason}`);
-  });
+  dashboard.setStatus("twitch", false);
+  fastify.log.warn(`Twitch disconnected: ${reason}`);
+});
 
   client.on("message", async (channel, tags, message, self) => {
 

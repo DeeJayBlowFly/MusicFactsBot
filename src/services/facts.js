@@ -3,7 +3,7 @@ const { getRelease } = require("../providers/discogs");
 const { getArticle } = require("../providers/wikipedia");
 
 const { validateFact } = require("../utils/validateFact");
-const { ask } = require("./openai");
+const { ask } = require("../openai");
 const buildPrompt = require("../prompts/facts");
 const { getLanguage } = require("../utils/language");
 const { parseTrack } = require("../utils/trackParser");
